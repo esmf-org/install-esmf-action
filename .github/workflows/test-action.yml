@@ -1,0 +1,66 @@
+name: install-esmf action test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-latest-version:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    - name: Stack Directory Setup
+      run: |
+        export STACK_DIR=${HOME}/stack
+        mkdir -p ${STACK_DIR}/{include,lib,lib64,bin}
+        export LD_LIBRARY_PATH=${STACK_DIR}/lib64:${STACK_DIR}/lib:${LD_LIBRARY_PATH}
+        echo "STACK_DIR=${STACK_DIR}" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> $GITHUB_ENV
+        echo "${STACK_DIR}/bin" >> $GITHUB_PATH
+    - name: Cache Dependencies
+      id: cache-libraries
+      uses: actions/cache@v3
+      with:
+        path: ${{env.STACK_DIR}}
+        key: stack-${{runner.os}}-${{runner.arch}}
+    - name: Install Libraries
+      env:
+        HDF5_TMP: ${{runner.temp}}/hdf5
+        NETCDF_C_TMP: ${{runner.temp}}/netcdf-c
+        NETCDF_FORTRAN_TMP: ${{runner.temp}}/netcdf-fortran
+        HDF5_URL: https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.2/src/hdf5-1.12.2.tar.gz
+        NETCDF_C_URL: https://github.com/Unidata/netcdf-c/archive/v4.9.0.tar.gz
+        NETCDF_FORTRAN_URL: https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz
+        CACHE_HIT: ${{steps.cache-libraries-restore.outputs.cache-hit}}
+      run: |
+        if [[ "$CACHE_HIT" != 'true' ]]; then
+          echo "Install HDF5"
+          mkdir ${HDF5_TMP}
+          cd ${HDF5_TMP}
+          curl -L ${{env.HDF5_URL}} | tar --strip-components=2 -xz
+          ./configure --quiet --enable-silent-rules --enable-fortran --prefix=${STACK_DIR}
+          make all install
+          echo "Install NETCDF-C"
+          mkdir ${NETCDF_C_TMP}
+          cd ${NETCDF_C_TMP}
+          curl -L ${{env.NETCDF_C_URL}} | tar --strip-components=1 -xz
+          CPPFLAGS=-I${STACK_DIR}/include LDFLAGS=-L${STACK_DIR}/lib ./configure --quiet --enable-silent-rules --prefix=${STACK_DIR}
+          make all install
+          echo "Install NETCDF-FORTRAN"
+          mkdir ${NETCDF_FORTRAN_TMP}
+          cd ${NETCDF_FORTRAN_TMP}
+          curl -L ${{env.NETCDF_FORTRAN_URL}} | tar --strip-components=1 -xz
+          CPPFLAGS=-I${STACK_DIR}/include LDFLAGS=-L${STACK_DIR}/lib ./configure --quiet --enable-silent-rules --prefix=${STACK_DIR}
+          make all install
+        fi
+        echo "HDF5_DIR=$STACK_DIR" >> $GITHUB_ENV
+        echo "NETCDF_DIR=$STACK_DIR" >> $GITHUB_ENV
+        echo "NETCDFF_DIR=$STACK_DIR" >> $GITHUB_ENV
+    - name: Install ESMF
+      uses: ./
+      with:
+        version: latest
+    - name: Test Installation
+      run: |
+        cat ${ESMFMKFILE}
