@@ -17,7 +17,7 @@ jobs:
         sudo apt-get -qq -y update
         sudo apt -qq install libnetcdf-dev libnetcdff-dev
     - name: Install ESMF
-      uses: esmf-org/install-esmf-action@v0.1
+      uses: esmf-org/install-esmf-action@v1
     - name: Test ESMF Installation
       run: |
         cat ${ESMFMKFILE}
@@ -49,7 +49,7 @@ days of inactivity.
 You can configure your ESMF installation as needed using the follwoing
 options.
 
-| Option key  | Description                                 | Default      |
+| Option Key  | Description                                 | Default      |
 | ----------- | ------------------------------------------- | ------------ |
 | `version`   | version of ESMF library                     | `latest`     |
 | `compiler`  | compiler used for building ESMF             | `gfortran`   |
@@ -57,22 +57,24 @@ options.
 | `netcdf`    | NetCDF library configuration                | `nc-config`  |
 | `cache`     | cache ESMF library for future workflow runs | true         |
 
-**`version`** -
+### version
 `install-esmf-action` automatically determines version when version is set to
 `latest` or `develop`. The `latest` version will determine the latest ESMF
 release. The `develop` version will determine the latest ESMF commit to the
 ESMF `develop` branch. Cache misses will be frequent when selecting the
 `develop` version.
 
+### compiler|comm|netcdf
 For more information on configuration options see section `Building ESMF` in the
 [ESMF User's Guide](https://earthsystemmodeling.org/doc) for your selected
 version.
 
-Here's an example workflow with configuration options:
+### configuration example
+Here's an example workflow step with configuration options:
 
 ```yaml
   - name: Install ESMF
-    uses: esmf-org/install-esmf-action@v0.1
+    uses: esmf-org/install-esmf-action@v1
     with:
       version: v8.5.0
       compiler: intel
@@ -83,4 +85,4 @@ Here's an example workflow with configuration options:
 
 ## Links
 
-[ESMF]: https://earthsystemmodeling.org/
+[ESMF Website](https://earthsystemmodeling.org)
