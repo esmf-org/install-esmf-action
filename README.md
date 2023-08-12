@@ -5,7 +5,6 @@ this action caches/restores ESMF libraries in order to speed up your workflow
 runs.
 
 [![Tests](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml)
-[![Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml)
 
 Here's an example workflow using `install-esmf-action`:
 
@@ -27,6 +26,7 @@ jobs:
       run: |
         cat ${ESMFMKFILE}
 ```
+[![Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml)
 
 In the example above the latest release of ESMF is installed on and cached for
 the `ubuntu-latest` runner. Prior to installing ESMF, NetCDF libraries were
