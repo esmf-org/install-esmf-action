@@ -15,16 +15,15 @@ jobs:
   acceptance-test:
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gfortran]
+        comm: [mpiuni]
         version: [latest]
         cache: [true]
         include:
           - os: ubuntu-latest
-            compiler: gfortran
-            comm: mpiuni
             netcdf: nc-config
           - os: macos-latest
-            compiler: gfortran
-            comm: mpiuni
             netcdf: nc-config
     runs-on: ${{matrix.os}}
     steps:
