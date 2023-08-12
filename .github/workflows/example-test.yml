@@ -1,10 +1,10 @@
-name: Quick Test
+name: Example Test
 
 on:
-  push:
+  release:
 
 jobs:
-  test-quick:
+  example-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -14,6 +14,8 @@ jobs:
         sudo apt -qq install libnetcdf-dev libnetcdff-dev
     - name: Install ESMF
       uses: ./
-    - name: Test ESMF Installation
+      env:
+        ESMF_NETCDF: nc-config
+    - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}

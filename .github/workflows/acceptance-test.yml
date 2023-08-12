@@ -1,19 +1,31 @@
-name: Complete Test
+name: Tests
 
 on:
   pull_request:
+    branches:
+      - main
+      - releases/**
+  push:
+    branches:
+      - main
+      - releases/**
   workflow_dispatch:
 
 jobs:
-  test-all:
+  acceptance-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
         version: [latest]
-        compiler: [gfortran]
-        comm: [mpiuni]
-        netcdf: [nc-config]
         cache: [true]
+        include:
+          - os: ubuntu-latest
+            compiler: gfortran
+            comm: mpiuni
+            netcdf: nc-config
+          - os: macos-latest
+            compiler: gfortran
+            comm: mpiuni
+            netcdf: nc-config
     runs-on: ${{matrix.os}}
     steps:
     - name: Checkout Repository
@@ -39,6 +51,6 @@ jobs:
       with:
         version: ${{matrix.version}}
         cache: ${{matrix.cache}}
-    - name: Test ESMF Installation
+    - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
