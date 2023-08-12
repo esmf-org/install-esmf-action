@@ -1,0 +1,22 @@
+name: Example Test
+
+on:
+  release:
+  workflow_dispatch:
+
+jobs:
+  example-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Package Install
+      run: |
+        sudo apt-get -qq -y update
+        sudo apt -qq install libnetcdf-dev libnetcdff-dev
+    - name: Install ESMF
+      uses: ./
+      env:
+        ESMF_NETCDF: nc-config
+    - name: Print ESMF Info
+      run: |
+        cat ${ESMFMKFILE}

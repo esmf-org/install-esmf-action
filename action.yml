@@ -5,18 +5,6 @@ inputs:
     description: 'Version'
     required: false
     default: 'latest'
-  compiler:
-    description: 'Compiler'
-    required: false
-    default: 'gfortran'
-  comm:
-    description: 'Communicator'
-    required: false
-    default: 'mpiuni'
-  netcdf:
-    description: 'NetCDF'
-    required: false
-    default: 'nc-config'
   cache:
     description: 'Caching'
     required: false
@@ -49,9 +37,6 @@ runs:
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf
-        ESMF_COMM: ${{inputs.comm}}
-        ESMF_COMPILER: ${{inputs.compiler}}
-        ESMF_NETCDF: ${{inputs.netcdf}}
         ESMF_INSTALL_MODDIR: "mod"
         ESMF_INSTALL_BINDIR: "bin"
         ESMF_INSTALL_LIBDIR: "lib"
@@ -72,9 +57,6 @@ runs:
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf
-        ESMF_COMM: ${{inputs.comm}}
-        ESMF_COMPILER: ${{inputs.compiler}}
-        ESMF_NETCDF: ${{inputs.netcdf}}
         ESMF_INSTALL_MODDIR: "mod"
         ESMF_INSTALL_BINDIR: "bin"
         ESMF_INSTALL_LIBDIR: "lib"
