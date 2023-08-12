@@ -54,10 +54,7 @@ options.
 | Option Key  | Description                                 | Default      |
 | ----------- | ------------------------------------------- | ------------ |
 | `version`   | version of ESMF library                     | `latest`     |
-| `compiler`  | compiler used for building ESMF             | `gfortran`   |
-| `comm`      | library used for communication              | `mpiuni`     |
-| `netcdf`    | NetCDF library configuration                | `nc-config`  |
-| `cache`     | cache ESMF library for future workflow runs | true         |
+| `cache`     | cache ESMF library for future workflow runs | `true`       |
 
 ### version
 `install-esmf-action` automatically determines version when version is set to
@@ -66,7 +63,7 @@ release. The `develop` version will determine the latest ESMF commit to the
 ESMF `develop` branch. Cache misses will be frequent when selecting the
 `develop` version.
 
-### compiler|comm|netcdf
+### ESMF_ environment variables
 For more information on configuration options see section `Building ESMF` in the
 [ESMF User's Guide](https://earthsystemmodeling.org/doc) for your selected
 version.
@@ -77,11 +74,12 @@ Here's an example workflow step with configuration options:
 ```yaml
   - name: Install ESMF
     uses: esmf-org/install-esmf-action@v1
+    env:
+      ESMF_COMPILER: intel
+      ESMF_COMM: openmpi
+      ESMF_NETCDF: nc-config
     with:
       version: v8.5.0
-      compiler: intel
-      comm: openmpi
-      netcdf: nc-config
       cache: true
 ```
 

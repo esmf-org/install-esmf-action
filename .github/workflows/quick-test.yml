@@ -1,0 +1,19 @@
+name: Quick Test
+
+on:
+  push:
+
+jobs:
+  test-quick:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Package Install
+      run: |
+        sudo apt-get -qq -y update
+        sudo apt -qq install libnetcdf-dev libnetcdff-dev
+    - name: Install ESMF
+      uses: ./
+    - name: Test ESMF Installation
+      run: |
+        cat ${ESMFMKFILE}

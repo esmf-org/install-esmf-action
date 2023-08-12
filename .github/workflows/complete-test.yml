@@ -1,11 +1,11 @@
-name: install-esmf-action test
+name: Complete Test
 
 on:
-  push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  test-all-configurations:
+  test-all:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -32,11 +32,12 @@ jobs:
         brew install netcdf netcdf-fortran
     - name: Install ESMF
       uses: ./
+      env:
+        ESMF_COMPILER: ${{matrix.compiler}}
+        ESMF_COMM: ${{matrix.comm}}
+        ESMF_NETCDF: ${{matrix.netcdf}}
       with:
         version: ${{matrix.version}}
-        compiler: ${{matrix.compiler}}
-        comm: ${{matrix.comm}}
-        netcdf: ${{matrix.netcdf}}
         cache: ${{matrix.cache}}
     - name: Test ESMF Installation
       run: |
