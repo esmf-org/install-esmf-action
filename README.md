@@ -4,7 +4,8 @@ This GitHub Action installs ESMF libraries on your GitHub runner. By default,
 this action caches/restores ESMF libraries in order to speed up your workflow
 runs.
 
-[![Test](https://github.com/esmf-org/install-esmf-action/actions/workflows/test-action.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/test-action.yml)
+[![Tests](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml)
+[![Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml)
 
 Here's an example workflow using `install-esmf-action`:
 
