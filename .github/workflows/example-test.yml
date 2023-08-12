@@ -2,6 +2,7 @@ name: Example Test
 
 on:
   release:
+  workflow_dispatch:
 
 jobs:
   example-test:
