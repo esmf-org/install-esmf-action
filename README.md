@@ -42,8 +42,8 @@ was built.
 
 ## Caching
 
-`install-esmf-action` caches libraries as `esmf@<version>-<esmf-build-hash>`.
-The `<esmf-build-hash>` is determined by all ESMF build settings in `make info`.
+`install-esmf-action` caches libraries as `esmf@<version>-<esmf-cache-key>`.
+The `<esmf-cache-key>` is determined by all ESMF build settings in `make info`.
 Note that ESMF dependencies are not cached by `install-esmf-action`. Follow the
 ["Caching dependencies to speed up workflows"](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
 instructions to cache ESMF dependencies as needed. Caches are deleted after 7
@@ -58,6 +58,7 @@ options.
 | Option Key  | Description                                 | Default      |
 | ----------- | ------------------------------------------- | ------------ |
 | `version`   | version of ESMF library                     | `latest`     |
+| `esmpy`     | install esmpy module                        | `false`      |
 | `cache`     | cache ESMF library for future workflow runs | `true`       |
 
 #### version
@@ -66,6 +67,21 @@ options.
 release. The `develop` version will determine the latest ESMF commit to the
 ESMF `develop` branch. Cache misses will be frequent when selecting the
 `develop` version.
+
+#### esmpy
+Enabling esmpy installs esmpy using pip and requires ESMF v8.3.0+.
+[Setup Python](https://github.com/marketplace/actions/setup-python)
+must be called prior to executing `install-esmf-action`.
+
+```yaml
+  - name: Setup Python
+    uses: actions/setup-python@v4
+    with:
+      python-version: '3.x'
+```
+
+#### cache
+See [Caching](#caching) for more information.
 
 ### ESMF Environment Variables
 ESMF uses environment variables for build configuration. Here are some commonly
@@ -93,6 +109,7 @@ Here's an example workflow step with configuration options:
       ESMF_NETCDF: nc-config
     with:
       version: v8.5.0
+      esmpy: true
       cache: true
 ```
 

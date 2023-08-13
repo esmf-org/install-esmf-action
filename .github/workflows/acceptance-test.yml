@@ -19,6 +19,7 @@ jobs:
         compiler: [gfortran]
         comm: [mpiuni]
         version: [latest]
+        esmpy: [true]
         cache: [true]
         include:
           - os: ubuntu-latest
@@ -41,6 +42,11 @@ jobs:
         ln -fs `which g++-11` /usr/local/bin/g++
         ln -fs `which gfortran-11` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
+    - name: Setup Python
+      if: ${{matrix.esmpy}}
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
     - name: Install ESMF
       uses: ./
       env:
@@ -49,7 +55,11 @@ jobs:
         ESMF_NETCDF: ${{matrix.netcdf}}
       with:
         version: ${{matrix.version}}
+        esmpy: ${{matrix.esmpy}}
         cache: ${{matrix.cache}}
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
+    - name: Check esmpy
+      if: ${{matrix.esmpy}}
+      run: python __tests__/esmpy_test.py

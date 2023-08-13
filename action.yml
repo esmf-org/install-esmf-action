@@ -5,6 +5,10 @@ inputs:
     description: 'Version'
     required: false
     default: 'latest'
+  esmpy:
+    description: 'esmpy'
+    required: false
+    default: false
   cache:
     description: 'Caching'
     required: false
@@ -37,10 +41,6 @@ runs:
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf
-        ESMF_INSTALL_MODDIR: "mod"
-        ESMF_INSTALL_BINDIR: "bin"
-        ESMF_INSTALL_LIBDIR: "lib"
-        ESMF_INSTALL_PREFIX: "${{env.ESMF_ROOT}}"
       run: |
         mkdir -p ${ESMF_DIR}
         cd ${ESMF_DIR}
@@ -65,6 +65,19 @@ runs:
         rm -f ${{github.workspace}}/.esmf.info
         cd ${ESMF_DIR}
         make all install
+        mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
+        if [ -d "src/addon/esmpy" ]; then
+          rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
+        elif [ -d "src/addon/ESMPy" ]; then
+          rsync -a src/addon/ESMPy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
+        fi
+    - id: install-esmpy
+      if: ${{inputs.esmpy}}
+      shell: bash
+      run: |
+        cd ${{env.ESMF_ROOT}}/addon/esmpy
+        python -m pip install --upgrade pip
+        python -m pip install .
     - id: environment-esmf
       shell: bash
       run: |
