@@ -19,6 +19,7 @@ jobs:
         compiler: [gfortran]
         comm: [mpiuni]
         version: [latest]
+        esmpy: [true]
         cache: [true]
         include:
           - os: ubuntu-latest
@@ -49,7 +50,11 @@ jobs:
         ESMF_NETCDF: ${{matrix.netcdf}}
       with:
         version: ${{matrix.version}}
+        esmpy: ${{matrix.esmpy}}
         cache: ${{matrix.cache}}
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
+    - name: Check esmpy
+      if: ${{matrix.esmpy}}
+      run: python3 __tests__/esmpy_test.py

@@ -58,6 +58,7 @@ options.
 | Option Key  | Description                                 | Default      |
 | ----------- | ------------------------------------------- | ------------ |
 | `version`   | version of ESMF library                     | `latest`     |
+| `esmpy`     | install esmpy module (requires pip)         | `true`       |
 | `cache`     | cache ESMF library for future workflow runs | `true`       |
 
 #### version
@@ -93,6 +94,7 @@ Here's an example workflow step with configuration options:
       ESMF_NETCDF: nc-config
     with:
       version: v8.5.0
+      esmpy: false
       cache: true
 ```
 
