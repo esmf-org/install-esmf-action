@@ -42,6 +42,11 @@ jobs:
         ln -fs `which g++-11` /usr/local/bin/g++
         ln -fs `which gfortran-11` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
+    - name: Setup Python
+      if: ${{matrix.esmpy}}
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
     - name: Install ESMF
       uses: ./
       env:
@@ -57,4 +62,4 @@ jobs:
         cat ${ESMFMKFILE}
     - name: Check esmpy
       if: ${{matrix.esmpy}}
-      run: python3 __tests__/esmpy_test.py
+      run: python __tests__/esmpy_test.py

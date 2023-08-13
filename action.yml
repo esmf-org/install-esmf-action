@@ -8,7 +8,7 @@ inputs:
   esmpy:
     description: 'esmpy'
     required: false
-    default: true
+    default: false
   cache:
     description: 'Caching'
     required: false
@@ -71,7 +71,8 @@ runs:
       shell: bash
       run: |
         cd ${{env.ESMF_ROOT}}/esmpy
-        python3 -m pip install .
+        python -m pip install --upgrade pip
+        python -m pip install .
     - id: environment-esmf
       shell: bash
       run: |
