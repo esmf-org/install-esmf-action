@@ -32,7 +32,7 @@ runs:
           ESMF_VERSION=`echo ${ESMF_VERSION} | cut -c1-8`
         else
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
-          ESMF_VERSION=`echo ${ESMF_VERSION} | sed 's/^v//g'`
+          ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
         fi
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
         echo "ESMF_VERSION=${ESMF_VERSION}" >> ${GITHUB_ENV}
