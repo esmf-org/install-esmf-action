@@ -40,6 +40,11 @@ was built.
 
 `install-esmf-action` is available on `ubuntu-*` and `macos-*` systems.
 
+## Install Directory
+
+`install-esmf-action` installs the ESMF package into
+`$HOME/esmf-<esmf-version>`.
+
 ## Caching
 
 `install-esmf-action` caches libraries as `esmf@<version>-<esmf-cache-key>`.
