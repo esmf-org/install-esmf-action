@@ -42,8 +42,9 @@ was built.
 
 ## Install Directory
 
-`install-esmf-action` installs the ESMF package into
-`$HOME/esmf-<esmf-version>`.
+By default `install-esmf-action` installs the ESMF package into
+`$HOME/esmf-<esmf-version>`. This can be changed by setting the
+`ESMF_INSTALL_PREFIX` environment variable.
 
 ## Building
 

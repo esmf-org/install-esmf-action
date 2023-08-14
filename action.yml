@@ -36,7 +36,11 @@ runs:
         fi
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
         echo "ESMF_VERSION=${ESMF_VERSION}" >> ${GITHUB_ENV}
-        echo "ESMF_ROOT=${HOME}/esmf-${ESMF_VERSION}" >> ${GITHUB_ENV}
+        if [ -z "${{env.ESMF_INSTALL_PREFIX}}" ]; then
+          echo "ESMF_ROOT=${HOME}/esmf-${ESMF_VERSION}" >> ${GITHUB_ENV}
+        else
+          echo "ESMF_ROOT=${{env.ESMF_INSTALL_PREFIX}}" >> ${GITHUB_ENV}
+        fi
     - id: download-esmf
       shell: bash
       env:
@@ -60,6 +64,8 @@ runs:
         ESMF_INSTALL_MODDIR: "mod"
         ESMF_INSTALL_BINDIR: "bin"
         ESMF_INSTALL_LIBDIR: "lib"
+        ESMF_INSTALL_DOCDIR: "doc"
+        ESMF_INSTALL_HEADERDIR: "include"
         ESMF_INSTALL_PREFIX: "${{env.ESMF_ROOT}}"
       run: |
         rm -f ${{github.workspace}}/.esmf.info
