@@ -46,9 +46,9 @@ runs:
         cd ${ESMF_DIR}
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf.info
-    - id: cache-esmf
+    - id: cache-esmf-restore
       if: ${{inputs.cache}}
-      uses: actions/cache@v3
+      uses: actions/cache/restore@v3
       with:
         path: ${{env.ESMF_ROOT}}
         key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf.info')}}
@@ -85,6 +85,12 @@ runs:
         LD_LIBRARY_PATH=${{env.ESMF_ROOT}}/lib:${LD_LIBRARY_PATH}
         echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> $GITHUB_ENV
         echo "${{env.ESMF_ROOT}}/bin" >> $GITHUB_PATH
+    - id: cache-esmf-save
+      if: ${{inputs.cache}}
+      uses: actions/cache/save@v3
+      with:
+        path: ${{env.ESMF_ROOT}}
+        key: ${{steps.cache-esmf-restore.outputs.cache-primary-key}}
 branding:
   icon: download
   color: blue
