@@ -31,7 +31,7 @@ runs:
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
           ESMF_VERSION=`echo ${ESMF_VERSION} | cut -c1-8`
         else
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
+          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo ${ESMF_VERSION} | sed 's/^v//g'`
         fi
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
@@ -46,14 +46,14 @@ runs:
         cd ${ESMF_DIR}
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf.info
-    - id: cache-esmf
+    - id: cache-esmf-restore
       if: ${{inputs.cache}}
-      uses: actions/cache@v3
+      uses: actions/cache/restore@v3
       with:
         path: ${{env.ESMF_ROOT}}
         key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf.info')}}
     - id: install-esmf
-      if: ${{steps.cache-esmf.outputs.cache-hit != 'true'}}
+      if: ${{steps.cache-esmf-restore.outputs.cache-hit != 'true'}}
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf
@@ -64,7 +64,8 @@ runs:
       run: |
         rm -f ${{github.workspace}}/.esmf.info
         cd ${ESMF_DIR}
-        make all install
+        make -j 2
+        make install
         mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
         if [ -d "src/addon/esmpy" ]; then
           rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
@@ -85,6 +86,12 @@ runs:
         LD_LIBRARY_PATH=${{env.ESMF_ROOT}}/lib:${LD_LIBRARY_PATH}
         echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> $GITHUB_ENV
         echo "${{env.ESMF_ROOT}}/bin" >> $GITHUB_PATH
+    - id: cache-esmf-save
+      if: ${{inputs.cache}}
+      uses: actions/cache/save@v3
+      with:
+        path: ${{env.ESMF_ROOT}}
+        key: ${{steps.cache-esmf-restore.outputs.cache-primary-key}}
 branding:
   icon: download
   color: blue
