@@ -13,20 +13,31 @@ on:
 
 jobs:
   acceptance-test:
+    name: ${{matrix.config.name}}
+    runs-on: ${{matrix.config.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        compiler: [gfortran]
-        comm: [mpiuni]
-        version: [latest]
-        esmpy: [true]
-        cache: [true]
-        include:
-          - os: ubuntu-latest
+        config:
+        - {
+            name: "Ubuntu (esmf-latest, gfortran, mpiuni, netcdf, esmpy)",
+            os: ubuntu-latest,
+            version: latest,
+            compiler: gfortran,
+            comm: mpiuni,
+            esmpy: true,
+            cache: true,
             netcdf: nc-config
-          - os: macos-latest
+          }
+        - {
+            name: "MacOS (v8.5.0, gfortran, mpiuni, netcdf)",
+            os: macos-latest,
+            version: v8.5.0,
+            compiler: gfortran,
+            comm: mpiuni,
+            esmpy: false,
+            cache: true,
             netcdf: nc-config
-    runs-on: ${{matrix.os}}
+          }
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -43,23 +54,23 @@ jobs:
         ln -fs `which gfortran-11` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
     - name: Setup Python
-      if: ${{matrix.esmpy}}
+      if: ${{matrix.config.esmpy}}
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
     - name: Install ESMF
       uses: ./
       env:
-        ESMF_COMPILER: ${{matrix.compiler}}
-        ESMF_COMM: ${{matrix.comm}}
-        ESMF_NETCDF: ${{matrix.netcdf}}
+        ESMF_COMPILER: ${{matrix.config.compiler}}
+        ESMF_COMM: ${{matrix.config.comm}}
+        ESMF_NETCDF: ${{matrix.config.netcdf}}
       with:
-        version: ${{matrix.version}}
-        esmpy: ${{matrix.esmpy}}
-        cache: ${{matrix.cache}}
+        version: ${{matrix.config.version}}
+        esmpy: ${{matrix.config.esmpy}}
+        cache: ${{matrix.config.cache}}
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
     - name: Check esmpy
-      if: ${{matrix.esmpy}}
+      if: ${{matrix.config.esmpy}}
       run: python __tests__/esmpy_test.py

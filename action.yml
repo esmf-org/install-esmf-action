@@ -31,7 +31,7 @@ runs:
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
           ESMF_VERSION=`echo ${ESMF_VERSION} | cut -c1-8`
         else
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
+          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo ${ESMF_VERSION} | sed 's/^v//g'`
         fi
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
@@ -53,7 +53,7 @@ runs:
         path: ${{env.ESMF_ROOT}}
         key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf.info')}}
     - id: install-esmf
-      if: ${{steps.cache-esmf.outputs.cache-hit != 'true'}}
+      if: ${{steps.cache-esmf-restore.outputs.cache-hit != 'true'}}
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf
@@ -64,7 +64,8 @@ runs:
       run: |
         rm -f ${{github.workspace}}/.esmf.info
         cd ${ESMF_DIR}
-        make all install
+        make -j 2
+        make install
         mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
         if [ -d "src/addon/esmpy" ]; then
           rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
