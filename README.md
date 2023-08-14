@@ -44,7 +44,9 @@ was built.
 
 By default `install-esmf-action` installs the ESMF package into
 `$HOME/esmf-<esmf-version>`. This can be changed by setting the
-`ESMF_INSTALL_PREFIX` environment variable.
+`ESMF_INSTALL_PREFIX` environment variable. You may install ESMF
+in a directory of your choice and provide your own caching. If you do
+so then please disable caching.
 
 ## Building
 
@@ -56,8 +58,9 @@ By default `install-esmf-action` installs the ESMF package into
 The `<esmf-cache-key>` is determined by all ESMF build settings in `make info`.
 Note that ESMF dependencies are not cached by `install-esmf-action`. Follow the
 ["Caching dependencies to speed up workflows"](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
-instructions to cache ESMF dependencies as needed. Caches are deleted after 7
-days of inactivity.
+instructions to cache ESMF dependencies as needed. You may disable caching and
+provide your own caching. If you do so then don't forget to include the ESMF
+installation directory. Caches are deleted after 7 days of inactivity.
 
 ## Build Configuration
 
@@ -117,6 +120,7 @@ Here's an example workflow step with configuration options:
       ESMF_COMPILER: intel
       ESMF_COMM: openmpi
       ESMF_NETCDF: nc-config
+      ESMF_INSTALL_PREFIX: $HOME/software-stack
     with:
       version: v8.5.0
       esmpy: true
