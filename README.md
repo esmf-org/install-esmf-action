@@ -45,6 +45,10 @@ was built.
 `install-esmf-action` installs the ESMF package into
 `$HOME/esmf-<esmf-version>`.
 
+## Building
+
+`install-esmf-action` utilizes two jobs while building.
+
 ## Caching
 
 `install-esmf-action` caches libraries as `esmf@<version>-<esmf-cache-key>`.
