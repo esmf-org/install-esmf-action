@@ -29,7 +29,7 @@ runs:
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
           ESMF_VERSION=`curl --silent "${ESMF_API_URL}" | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
-          ESMF_VERSION=`echo ${ESMF_VERSION} | cut -c1-8`
+          ESMF_VERSION=`echo ${ESMF_VERSION} | cut -c1-7`
         else
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
