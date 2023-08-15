@@ -30,11 +30,12 @@ runs:
         elif [[ "${{inputs.version}}" == 'develop' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
           curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
-          ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
+          ESMF_COMMIT=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
-          ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
+          ESMF_COMMIT=`echo $ESMF_COMMIT | sed -E 's/.*"([^"]+)".*/\1/'`
+          ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_COMMIT}.tar.gz
           ESMF_VERSION="develop"
+          echo "ESMF_COMMIT=${ESMF_COMMIT}" >> ${GITHUB_ENV}
         else
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
