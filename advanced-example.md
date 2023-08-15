@@ -34,7 +34,7 @@ jobs:
         key: stack-ubuntu-gfortran-openmpi
     - name: Install OPENMPI
       env:
-        CACHE_HIT: steps.cache-libraries.outputs.cache-hit
+        CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
       run: |
         if [[ "$CACHE_HIT" != 'true' ]]; then
           OPENMPI_URL="https://download.open-mpi.org/release/open-mpi/v4.0/openmpi-4.0.3.tar.gz"
@@ -52,7 +52,7 @@ jobs:
         echo "OPENMPI_ROOT=$STACK_ROOT" >> $GITHUB_ENV
     - name: Install HDF5
       env:
-        CACHE_HIT: steps.cache-libraries.outputs.cache-hit
+        CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
       run: |
         if [[ "$CACHE_HIT" != 'true' ]]; then
           HDF5_URL="https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.2/src/hdf5-1.12.2.tar.gz"
@@ -65,7 +65,7 @@ jobs:
         echo "HDF5_ROOT=${{env.STACK_ROOT}}" >> $GITHUB_ENV
     - name: Install NetCDF-C
       env:
-        CACHE_HIT: steps.cache-libraries.outputs.cache-hit
+        CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
       run: |
         if [[ "$CACHE_HIT" != 'true' ]]; then
           NETCDF_URL="https://github.com/Unidata/netcdf-c/archive/v4.9.0.tar.gz"
@@ -78,7 +78,7 @@ jobs:
         echo "NETCDF_ROOT=${{env.STACK_ROOT}}" >> $GITHUB_ENV
     - name: Install NetCDF-Fortran
       env:
-        CACHE_HIT: steps.cache-libraries.outputs.cache-hit
+        CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
       run: |
         if [[ "$CACHE_HIT" != 'true' ]]; then
           NETCDFF_URL="https://github.com/Unidata/netcdf-fortran/archive/v4.5.4.tar.gz"
