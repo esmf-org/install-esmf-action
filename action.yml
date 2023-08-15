@@ -2,15 +2,15 @@ name: 'Install ESMF'
 description: 'Install/Cache ESMF on Runner'
 inputs:
   version:
-    description: 'Version'
+    description: 'ESMF Version'
     required: false
     default: 'latest'
   esmpy:
-    description: 'esmpy'
+    description: 'Enable esmpy'
     required: false
     default: false
   cache:
-    description: 'Caching'
+    description: 'Enable Caching'
     required: false
     default: true
 
@@ -79,7 +79,7 @@ runs:
           rsync -a src/addon/ESMPy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
         fi
     - id: install-esmpy
-      if: ${{inputs.esmpy}}
+      if: ${{inputs.esmpy == 'true'}}
       shell: bash
       run: |
         cd ${{env.ESMF_ROOT}}/addon/esmpy
