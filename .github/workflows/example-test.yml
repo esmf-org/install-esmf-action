@@ -1,4 +1,4 @@
-name: Example Test
+name: Basic Example
 
 on:
   release:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  example-test:
+  build-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

@@ -2,7 +2,8 @@
 
 This GitHub Action installs ESMF libraries on your GitHub runner. By default,
 this action caches/restores ESMF libraries in order to speed up your workflow
-runs.
+runs. If you're familiar with GitHub workflows and ESMF then skip ahead to an
+[advanced example](advanced-example.md).
 
 [![Tests](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml)
 
@@ -26,7 +27,7 @@ jobs:
       run: |
         cat ${ESMFMKFILE}
 ```
-[![Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml)
+[![Basic Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/example-test.yml)
 
 In the example above the latest release of ESMF is installed on and cached for
 the `ubuntu-latest` runner. Prior to installing ESMF, NetCDF libraries were
