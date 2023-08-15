@@ -51,7 +51,7 @@ runs:
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf.info
     - id: cache-esmf
-      if: ${{inputs.cache}}
+      if: ${{inputs.cache == 'true'}}
       uses: actions/cache@v3
       with:
         path: ${{env.ESMF_ROOT}}
