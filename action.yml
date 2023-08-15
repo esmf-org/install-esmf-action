@@ -73,6 +73,7 @@ runs:
       env:
         ESMF_CACHE_KEY: "${{hashFiles('.esmf.info')}}"
       run: |
+        set -x
         if [ -f "$ESMFMKFILE" ]; then
           INSTALLED_CACHE_KEY=`cat $ESMFMKFILE | grep -m1 'ESMF_CACHE_KEY='`
           INSTALLED_CACHE_KEY=${INSTALLED_CACHE_KEY#*=}
