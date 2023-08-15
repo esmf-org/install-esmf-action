@@ -26,15 +26,17 @@ jobs:
             comm: mpiuni,
             esmpy: true,
             cache: true,
+            prefix: "",
             netcdf: nc-config
           }
         - {
-            name: "Ubuntu (develop, no-cache)",
+            name: "Ubuntu (develop, no-cache, prefix)",
             os: ubuntu-latest,
             version: develop,
             compiler: gfortran,
             comm: mpiuni,
             esmpy: false,
+            prefix: "$HOME/stack",
             cache: false
           }
         - {
@@ -45,6 +47,7 @@ jobs:
             comm: mpiuni,
             esmpy: false,
             cache: true,
+            prefix: "",
             netcdf: nc-config
           }
     steps:
@@ -72,6 +75,7 @@ jobs:
       env:
         ESMF_COMPILER: ${{matrix.config.compiler}}
         ESMF_COMM: ${{matrix.config.comm}}
+        ESMF_INSTALL_PREFIX: ${{matrix.config.prefix}}
         ESMF_NETCDF: ${{matrix.config.netcdf}}
       with:
         version: ${{matrix.config.version}}
