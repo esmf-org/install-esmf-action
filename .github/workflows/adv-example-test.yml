@@ -3,6 +3,8 @@ name: Advanced Example
 on:
   release:
   push:
+    branches:
+      - releases/**
   workflow_dispatch:
 
 jobs:
