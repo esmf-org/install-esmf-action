@@ -22,13 +22,16 @@ runs:
       run: |
         if [[ "${{inputs.version}}" == 'latest' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/releases/latest
-          ESMF_VERSION=`curl --silent -L "${ESMF_API_URL}" | grep '"tag_name":'`
-          ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
+          curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
+          ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
+          rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
           ESMF_VERSION=`echo $ESMF_VERSION | sed 's/^v//g'`
         elif [[ "${{inputs.version}}" == 'develop' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
-          ESMF_VERSION=`curl --silent -L "${ESMF_API_URL}" | grep -m1 '"sha":'`
+          curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
+          ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
+          rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
           ESMF_VERSION="`echo $ESMF_VERSION | cut -c1-7`"
