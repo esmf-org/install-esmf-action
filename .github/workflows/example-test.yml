@@ -2,7 +2,9 @@ name: Example Test
 
 on:
   release:
-  workflow_dispatch:
+  push:
+    branches:
+      - releases/**
 
 jobs:
   example-test:
