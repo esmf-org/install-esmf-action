@@ -20,16 +20,15 @@ runs:
     - id: version-esmf
       shell: bash
       run: |
-        set -x
         if [[ "${{inputs.version}}" == 'latest' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/releases/latest
-          ESMF_VERSION=`curl --silent "${ESMF_API_URL}" | grep '"tag_name":'`
+          ESMF_VERSION=`curl --silent -L "${ESMF_API_URL}" | grep '"tag_name":'`
           ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
           ESMF_VERSION=`echo $ESMF_VERSION | sed 's/^v//g'`
         elif [[ "${{inputs.version}}" == 'develop' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
-          ESMF_VERSION=`curl --silent "${ESMF_API_URL}" | grep -m1 '"sha":'`
+          ESMF_VERSION=`curl --silent -L "${ESMF_API_URL}" | grep -m1 '"sha":'`
           ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
           ESMF_VERSION="`echo $ESMF_VERSION | cut -c1-7`"
