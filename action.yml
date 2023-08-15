@@ -26,7 +26,7 @@ runs:
           ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
-          ESMF_VERSION=`echo $ESMF_VERSION | sed 's/^v//g'`
+          ESMF_VERSION="latest"
         elif [[ "${{inputs.version}}" == 'develop' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
           curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
@@ -34,7 +34,7 @@ runs:
           rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_VERSION=`echo $ESMF_VERSION | sed -E 's/.*"([^"]+)".*/\1/'`
           ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_VERSION}.tar.gz
-          ESMF_VERSION="`echo $ESMF_VERSION | cut -c1-7`"
+          ESMF_VERSION="develop"
         else
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
