@@ -23,7 +23,7 @@ runs:
         if [[ "${{inputs.version}}" == 'latest' ]]; then
           ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/releases/latest
           curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
-          ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
+          ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
           ESMF_VERSION="latest"
@@ -39,7 +39,6 @@ runs:
           ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
           ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
         fi
-        set -e
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
         echo "ESMF_VERSION=${ESMF_VERSION}" >> ${GITHUB_ENV}
         if [ -z "${{env.ESMF_INSTALL_PREFIX}}" ]; then
