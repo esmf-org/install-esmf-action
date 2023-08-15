@@ -19,7 +19,7 @@ jobs:
       matrix:
         config:
         - {
-            name: "Ubuntu (esmf-latest, gfortran, mpiuni, netcdf, esmpy)",
+            name: "Ubuntu (latest, netcdf, esmpy, cache)",
             os: ubuntu-latest,
             version: latest,
             compiler: gfortran,
@@ -29,7 +29,16 @@ jobs:
             netcdf: nc-config
           }
         - {
-            name: "MacOS (v8.5.0, gfortran, mpiuni, netcdf)",
+            name: "Ubuntu (develop, no-cache)",
+            os: ubuntu-latest,
+            version: develop,
+            compiler: gfortran,
+            comm: mpiuni,
+            esmpy: false,
+            cache: false
+          }
+        - {
+            name: "MacOS (v8.5.0, netcdf, cache)",
             os: macos-latest,
             version: v8.5.0,
             compiler: gfortran,
@@ -42,19 +51,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
     - name: Package Install (Linux)
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && matrix.config.netcdf == 'nc-config'
       run: |
         sudo apt-get -qq -y update
         sudo apt -qq install libnetcdf-dev libnetcdff-dev
     - name: Package Install (macOS)
-      if: runner.os == 'macOS'
+      if: runner.os == 'macOS' && matrix.config.netcdf == 'nc-config'
       run: |
         ln -fs `which gcc-11` /usr/local/bin/gcc
         ln -fs `which g++-11` /usr/local/bin/g++
         ln -fs `which gfortran-11` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
     - name: Setup Python
-      if: ${{matrix.config.esmpy}}
+      if: matrix.config.esmpy
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
@@ -72,5 +81,5 @@ jobs:
       run: |
         cat ${ESMFMKFILE}
     - name: Check esmpy
-      if: ${{matrix.config.esmpy}}
+      if: matrix.config.esmpy
       run: python __tests__/esmpy_test.py
