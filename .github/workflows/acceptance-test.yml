@@ -19,11 +19,12 @@ jobs:
       matrix:
         config:
         - {
-            name: "Ubuntu (latest, netcdf, esmpy, cache)",
+            name: "Ubuntu (latest, cache, netcdf, esmx, esmpy)",
             os: ubuntu-latest,
             version: latest,
             compiler: gfortran,
             comm: mpiuni,
+            esmx: true,
             esmpy: true,
             cache: true,
             prefix: "",
@@ -35,16 +36,18 @@ jobs:
             version: develop,
             compiler: gfortran,
             comm: mpiuni,
+            esmx: false,
             esmpy: false,
             prefix: "$HOME/stack",
             cache: false
           }
         - {
-            name: "MacOS (v8.5.0, netcdf, cache)",
+            name: "MacOS (v8.5.0, cache, netcdf)",
             os: macos-latest,
             version: v8.5.0,
             compiler: gfortran,
             comm: mpiuni,
+            esmx: false,
             esmpy: false,
             cache: true,
             prefix: "",
@@ -84,6 +87,17 @@ jobs:
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
+    - name: Check ESMX
+      if: matrix.config.esmx
+      run: |
+        pip install pyyaml
+        cd __tests__
+        ESMX_Builder esmxBuild.yaml
+        if [[ "${{matrix.config.comm}}" == "mpiuni" ]]; then
+          ./install/bin/esmx_app
+        else
+          mpirun -np 1 ./install/bin/esmx_app
+        fi
     - name: Check esmpy
       if: matrix.config.esmpy
       run: python __tests__/esmpy_test.py

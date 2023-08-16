@@ -6,7 +6,7 @@ HDF5, and NetCDF. Notice that the `Install ESMF` step installs ESMF into the
 same software stack directory and disables `cache`. Also, the `Install ESMF`
 step does not check `cache-hit`. `install-esmf-action` executes every time the
 `build-test` job executes. During execution it compares the installed ESMF
-version to the latest ESMF release and installs a newer version if needed.
+revision to the ESMF develop branch and installs a newer version if needed.
 
 [![Advanced Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/adv-example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/adv-example-test.yml)
 
@@ -97,7 +97,7 @@ jobs:
         ESMF_NETCDF: nc-config
         ESMF_INSTALL_PREFIX: ${STACK_ROOT}
       with:
-        version: latest
+        version: develop
         esmpy: false
         cache: false
     - name: Print ESMF Info

@@ -44,7 +44,7 @@ was built.
 ## Install Directory
 
 By default `install-esmf-action` installs the ESMF package into
-`$HOME/esmf-<esmf-version>`. This can be changed by setting the
+`$HOME/.esmf-cache`. This can be changed by setting the
 `ESMF_INSTALL_PREFIX` environment variable. You may install ESMF
 in a directory of your choice and provide your own caching. If you do
 so then please disable caching.
