@@ -84,6 +84,17 @@ jobs:
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}
+    - name: Check ESMX
+      if: matrix.config.version == 'latest' || matrix.config.version == 'develop'
+      run: |
+        pip install pyyaml
+        cd __tests__
+        ESMX_Builder esmxBuild.yaml
+        if [[ "${{matrix.config.comm}}" == "mpiuni" ]]; then
+          ./install/bin/esmx_app
+        else
+          mpirun -np 1 ./install/bin/esmx_app
+        fi
     - name: Check esmpy
       if: matrix.config.esmpy
       run: python __tests__/esmpy_test.py
