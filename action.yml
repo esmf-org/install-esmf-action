@@ -21,36 +21,34 @@ runs:
       shell: bash
       run: |
         if [[ "${{inputs.version}}" == 'latest' ]]; then
-          ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/releases/latest
+          ESMF_API_URL="https://api.github.com/repos/esmf-org/esmf/releases/latest"
           curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
           ESMF_VERSION=`cat ${{runner.temp}}/.esmf-gh.info | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz
-          ESMF_VERSION="latest"
+          ESMF_URL="https://github.com/esmf-org/esmf/archive/refs/tags/${ESMF_VERSION}.tar.gz"
         elif [[ "${{inputs.version}}" == 'develop' ]]; then
-          ESMF_API_URL=https://api.github.com/repos/esmf-org/esmf/commits/develop
+          ESMF_API_URL="https://api.github.com/repos/esmf-org/esmf/commits/develop"
           curl --silent -L "${ESMF_API_URL}" > ${{runner.temp}}/.esmf-gh.info
           ESMF_COMMIT=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
-          ESMF_COMMIT=`echo $ESMF_COMMIT | sed -E 's/.*"([^"]+)".*/\1/'`
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/${ESMF_COMMIT}.tar.gz
-          ESMF_VERSION="develop"
+          ESMF_URL="https://github.com/esmf-org/esmf/archive/${ESMF_COMMIT}.tar.gz"
+          ESMF_VERSION=`echo ${ESMF_COMMIT} | cut -c1-7`
           echo "ESMF_COMMIT=${ESMF_COMMIT}" >> ${GITHUB_ENV}
         else
-          ESMF_URL=https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz
-          ESMF_VERSION=`echo "${{inputs.version}}" | sed 's/^v//g'`
+          ESMF_URL="https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz"
+          ESMF_VERSION="${{inputs.version}}"
         fi
         echo "esmf-url=${ESMF_URL}" >> ${GITHUB_OUTPUT}
         echo "ESMF_VERSION=${ESMF_VERSION}" >> ${GITHUB_ENV}
         if [ -z "${{env.ESMF_INSTALL_PREFIX}}" ]; then
-          echo "ESMF_ROOT=${HOME}/esmf-${ESMF_VERSION}" >> ${GITHUB_ENV}
+          echo "ESMF_ROOT=${HOME}/.esmf-cache" >> ${GITHUB_ENV}
         else
           echo "ESMF_ROOT=${{env.ESMF_INSTALL_PREFIX}}" >> ${GITHUB_ENV}
         fi
     - id: download-esmf
       shell: bash
       env:
-        ESMF_DIR: ${{runner.temp}}/esmf
+        ESMF_DIR: ${{runner.temp}}/esmf-src
       run: |
         mkdir -p ${ESMF_DIR}
         cd ${ESMF_DIR}
@@ -89,7 +87,7 @@ runs:
       if: steps.check-install-esmf.outputs.key-match != 'true'
       shell: bash
       env:
-        ESMF_DIR: ${{runner.temp}}/esmf
+        ESMF_DIR: ${{runner.temp}}/esmf-src
         ESMF_INSTALL_MODDIR: "mod"
         ESMF_INSTALL_BINDIR: "bin"
         ESMF_INSTALL_LIBDIR: "lib"

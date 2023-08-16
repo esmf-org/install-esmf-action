@@ -93,7 +93,7 @@ jobs:
         ESMF_NETCDF: nc-config
         ESMF_INSTALL_PREFIX: ${STACK_ROOT}
       with:
-        version: latest
+        version: develop
         esmpy: false
         cache: false
     - name: Print ESMF Info
