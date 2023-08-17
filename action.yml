@@ -67,12 +67,12 @@ runs:
         cd ${ESMF_DIR}
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         if [[ "${{inputs.rebuild-check}}" == "thorough" ]]; then
-          make info | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf-cache.txt
+          make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf-cache.txt
         else
-          make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ~/.esmf-cache.txt
+          make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ${{github.workspace}}/.esmf-cache.txt
         fi
         if [ ! -z "${{inputs.build-key}}" ]; then
-          echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ~/.esmf-cache.txt
+          echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ${{github.workspace}}/.esmf-cache.txt
         fi
     - id: cache-esmf
       if: inputs.cache == 'true'
