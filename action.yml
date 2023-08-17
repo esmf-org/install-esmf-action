@@ -1,6 +1,11 @@
 name: 'Install ESMF'
+author: 'ESMF'
 description: 'Install/Cache ESMF on Runner'
 inputs:
+  build-key:
+    description: 'Unique Build Key'
+    required: false
+    default: ''
   version:
     description: 'ESMF Version'
     required: false
@@ -9,10 +14,18 @@ inputs:
     description: 'Enable esmpy'
     required: false
     default: false
+  rebuild-check:
+    description: 'Installation Check'
+    required: false
+    default: 'standard'
   cache:
     description: 'Enable Caching'
     required: false
     default: true
+outputs:
+  esmf-cache-key:
+    description: "ESMF Cache Key"
+    value: ${{steps.rebuild-check-esmf.outputs.esmf-cache-key}}
 
 runs:
   using: "composite"
@@ -45,7 +58,7 @@ runs:
         else
           echo "ESMF_ROOT=${{env.ESMF_INSTALL_PREFIX}}" >> ${GITHUB_ENV}
         fi
-    - id: download-esmf
+    - id: cache-key-esmf
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf-src
@@ -53,7 +66,14 @@ runs:
         mkdir -p ${ESMF_DIR}
         cd ${ESMF_DIR}
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
-        make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf.info
+        if [[ "${{inputs.rebuild-check}}" == "thorough" ]]; then
+          make info | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf.info
+        else
+          make info | sed '/Make version:/{N;d;}' | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf.info
+        fi
+        if [ ! -z "${{inputs.build-key}}" ]; then
+          echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ~/.esmf.info
+        fi
     - id: cache-esmf
       if: inputs.cache == 'true'
       uses: actions/cache@v3
@@ -67,7 +87,7 @@ runs:
         LD_LIBRARY_PATH=${{env.ESMF_ROOT}}/lib:${LD_LIBRARY_PATH}
         echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> $GITHUB_ENV
         echo "${{env.ESMF_ROOT}}/bin" >> $GITHUB_PATH
-    - id: check-install-esmf
+    - id: rebuild-check-esmf
       shell: bash
       env:
         ESMF_CACHE_KEY: "${{hashFiles('.esmf.info')}}"
@@ -83,8 +103,9 @@ runs:
         else
           echo "key-match=false" >> ${GITHUB_OUTPUT}
         fi
+        echo "esmf-cache-key=$ESMF_CACHE_KEY" >> $GITHUB_OUTPUT
     - id: install-esmf
-      if: steps.check-install-esmf.outputs.key-match != 'true'
+      if: steps.rebuild-check-esmf.outputs.key-match != 'true'
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf-src
