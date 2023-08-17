@@ -56,12 +56,18 @@ so then please disable caching.
 ## Caching
 
 `install-esmf-action` caches libraries as `esmf@<version>-<esmf-cache-key>`.
-The `<esmf-cache-key>` is determined by all ESMF build settings in `make info`.
+The `<esmf-cache-key>` is determined by ESMF version, ESMF environment
+variables, compiler versions, and external libraries. If multiple
+workflows/jobs share the same `<esmf-cache-key>` but this is not desired then
+set a unique `build-key`.
+
 Note that ESMF dependencies are not cached by `install-esmf-action`. Follow the
 ["Caching dependencies to speed up workflows"](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
 instructions to cache ESMF dependencies as needed. You may disable caching and
 provide your own caching. If you do so then don't forget to include the ESMF
-installation directory. Caches are deleted after 7 days of inactivity.
+installation directory.
+
+Caches are deleted after 7 days of inactivity.
 
 ## Build Configuration
 
@@ -69,11 +75,17 @@ installation directory. Caches are deleted after 7 days of inactivity.
 You can configure your ESMF installation as needed using the follwoing
 options.
 
-| Option Key  | Description                                 | Default      |
-| ----------- | ------------------------------------------- | ------------ |
-| `version`   | version of ESMF library                     | `latest`     |
-| `esmpy`     | install esmpy module                        | `false`      |
-| `cache`     | cache ESMF library for future workflow runs | `true`       |
+| Option Key      | Description                                 | Default      |
+| --------------- | ------------------------------------------- | ------------ |
+| `build-key`     | unique build description                    | (blank)      |
+| `version`       | version of ESMF library                     | `latest`     |
+| `esmpy`         | install esmpy module                        | `false`      |
+| `rebuild-check` | check version, compilers, and linker paths  | `standard`   |
+| `cache`         | cache ESMF library for future workflow runs | `true`       |
+
+#### build-key
+Uniquely describe the ESMF build context in order to prevent `esmf-cache-key`
+collisions.
 
 #### version
 `install-esmf-action` automatically determines version when version is set to
@@ -93,6 +105,13 @@ must be called prior to executing `install-esmf-action`.
     with:
       python-version: '3.x'
 ```
+
+#### rebuild-check
+The `standard` rebuild check compares ESMF version, ESMF environment variables,
+compiler versions, and external libraries to the installation. If any of these
+settings have changed then `install-esmf-action` rebuilds ESMF. The `thorough`
+option rebuilds ESMF if any setting has changed in `make info`, including make
+and cmake versions.
 
 #### cache
 See [Caching](#caching) for more information.

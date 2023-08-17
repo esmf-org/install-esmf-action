@@ -97,6 +97,7 @@ jobs:
         ESMF_NETCDF: nc-config
         ESMF_INSTALL_PREFIX: ${STACK_ROOT}
       with:
+        build-key: 'ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0'
         version: develop
         esmpy: false
         cache: false
