@@ -67,19 +67,19 @@ runs:
         cd ${ESMF_DIR}
         curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         if [[ "${{inputs.rebuild-check}}" == "thorough" ]]; then
-          make info | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf.info
+          make info | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf-cache.txt
         else
-          make info | sed '/Make version:/{N;d;}' | sed -E '/Compiling on|Machine characteristics/d' > ~/.esmf.info
+          make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ~/.esmf-cache.txt
         fi
         if [ ! -z "${{inputs.build-key}}" ]; then
-          echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ~/.esmf.info
+          echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ~/.esmf-cache.txt
         fi
     - id: cache-esmf
       if: inputs.cache == 'true'
       uses: actions/cache@v3
       with:
         path: ${{env.ESMF_ROOT}}
-        key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf.info')}}
+        key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf-cache.txt')}}
     - id: environment-esmf
       shell: bash
       run: |
@@ -90,7 +90,7 @@ runs:
     - id: rebuild-check-esmf
       shell: bash
       env:
-        ESMF_CACHE_KEY: "${{hashFiles('.esmf.info')}}"
+        ESMF_CACHE_KEY: "${{hashFiles('.esmf-cache.txt')}}"
       run: |
         if [ -f "$ESMFMKFILE" ]; then
           INSTALLED_CACHE_KEY=`cat $ESMFMKFILE | grep -m1 'ESMF_CACHE_KEY\='` || true
@@ -115,12 +115,16 @@ runs:
         ESMF_INSTALL_DOCDIR: "doc"
         ESMF_INSTALL_HEADERDIR: "include"
         ESMF_INSTALL_PREFIX: "${{env.ESMF_ROOT}}"
-        ESMF_CACHE_KEY: "${{hashFiles('.esmf.info')}}"
+        ESMF_CACHE_KEY: "${{hashFiles('.esmf-cache.txt')}}"
       run: |
-        rm -f ${{github.workspace}}/.esmf.info
+        if [ -f "${ESMF_INSTALL_PREFIX}/.esmf-cache.txt" ]; then
+          echo "ESMF Build Changes"
+          diff ${ESMF_INSTALL_PREFIX}/.esmf-cache.txt ${{github.workspace}}/.
+        fi
         cd ${ESMF_DIR}
         make -j 2
         make install
+        mv -f ${{github.workspace}}/.esmf-cache.txt ${ESMF_INSTALL_PREFIX}/.
         mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
         if [ -d "src/addon/esmpy" ]; then
           rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
