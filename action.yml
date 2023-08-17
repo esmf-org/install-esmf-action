@@ -45,7 +45,7 @@ runs:
           ESMF_COMMIT=`cat ${{runner.temp}}/.esmf-gh.info | grep -m1 '"sha":' | sed -E 's/.*"([^"]+)".*/\1/'`
           rm -f ${{runner.temp}}/.esmf-gh.info
           ESMF_URL="https://github.com/esmf-org/esmf/archive/${ESMF_COMMIT}.tar.gz"
-          ESMF_VERSION=`echo ${ESMF_COMMIT} | cut -c1-7`
+          ESMF_VERSION="develop"
           echo "ESMF_COMMIT=${ESMF_COMMIT}" >> ${GITHUB_ENV}
         else
           ESMF_URL="https://github.com/esmf-org/esmf/archive/refs/tags/${{inputs.version}}.tar.gz"
