@@ -111,7 +111,9 @@ The `standard` rebuild check compares ESMF version, ESMF environment variables,
 compiler versions, and external libraries to the installation. If any of these
 settings have changed then `install-esmf-action` rebuilds ESMF. The `thorough`
 option rebuilds ESMF if any setting has changed in `make info`, including make
-and cmake versions.
+and cmake versions. The `quick` rebuild check does not check compiler versions
+or external libraries. It is a best practice to set a unique `build-key` when
+using the `quick` rebuild check.
 
 #### cache
 See [Caching](#caching) for more information.
