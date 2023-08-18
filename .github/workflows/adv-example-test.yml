@@ -96,6 +96,7 @@ jobs:
         build-key: 'ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0'
         version: develop
         esmpy: false
+        rebuild-check: quick
         cache: false
     - name: Print ESMF Info
       run: |

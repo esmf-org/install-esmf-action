@@ -65,11 +65,17 @@ runs:
       run: |
         mkdir -p ${ESMF_DIR}
         cd ${ESMF_DIR}
-        curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
-        if [[ "${{inputs.rebuild-check}}" == "thorough" ]]; then
-          make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf-cache.txt
+        if [[ "${{inputs.rebuild-check}}" == "quick" ]]; then
+          printenv | grep "^ESMF_" > ${{github.workspace}}/.esmf-cache.txt
+          echo "RUNNER_OS=${{runner.os}}" >> ${{github.workspace}}/.esmf-cache.txt
+          echo "RUNNER_ARCH=${{runner.arch}}" >> ${{github.workspace}}/.esmf-cache.txt
         else
-          make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ${{github.workspace}}/.esmf-cache.txt
+          curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
+          if [[ "${{inputs.rebuild-check}}" == "thorough" ]]; then
+            make info | sed -E '/Compiling on|Machine characteristics/d' > ${{github.workspace}}/.esmf-cache.txt
+          else
+            make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ${{github.workspace}}/.esmf-cache.txt
+          fi
         fi
         if [ ! -z "${{inputs.build-key}}" ]; then
           echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ${{github.workspace}}/.esmf-cache.txt
@@ -122,6 +128,9 @@ runs:
           diff ${ESMF_INSTALL_PREFIX}/.esmf-cache.txt ${{github.workspace}}/.
         fi
         cd ${ESMF_DIR}
+        if [[ "${{inputs.rebuild-check}}" == "quick" ]]; then
+          curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
+        fi
         make -j 2
         make install
         mv -f ${{github.workspace}}/.esmf-cache.txt ${ESMF_INSTALL_PREFIX}/.
