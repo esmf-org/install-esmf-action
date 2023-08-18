@@ -27,7 +27,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{env.STACK_ROOT}}
-        key: stack-ubuntu-gfortran-openmpi
+        key: ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0
     - name: Install OPENMPI
       env:
         CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
@@ -91,13 +91,12 @@ jobs:
         ESMF_COMPILER: gfortran
         ESMF_COMM: openmpi
         ESMF_NETCDF: nc-config
-        ESMF_INSTALL_PREFIX: ${STACK_ROOT}
       with:
         build-key: 'ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0'
         version: develop
         esmpy: false
         rebuild-check: quick
-        cache: false
+        cache: true
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}

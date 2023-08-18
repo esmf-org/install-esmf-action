@@ -1,12 +1,15 @@
 # Advanced Example
 
 In the following example you'll see how to integrate an ESMF installation into
-an existing cache. Prior to installing ESMF this example installs OpenMPI,
-HDF5, and NetCDF. Notice that the `Install ESMF` step installs ESMF into the
-same software stack directory and disables `cache`. Also, the `Install ESMF`
-step does not check `cache-hit`. `install-esmf-action` executes every time the
-`build-test` job executes. During execution it compares the installed ESMF
-revision to the ESMF develop branch and installs a newer version if needed.
+an existing workflow. Prior to installing ESMF this example installs OpenMPI,
+HDF5, and NetCDF. `install-esmf-action` executes every time the `build-test`
+job executes. During execution it compares the installed ESMF revision to the
+ESMF develop branch and installs a newer version if needed.
+
+It is worthwhile to note that caches are immutable. If you decide to cache ESMF
+when selecting the `develop` version it is recommended to use internal caching.
+Note that each time there is an update to the ESMF `develop` branch a new cache
+is created for ESMF. This will consume your cache quota.
 
 [![Advanced Example](https://github.com/esmf-org/install-esmf-action/actions/workflows/adv-example-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/adv-example-test.yml)
 
@@ -31,7 +34,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{env.STACK_ROOT}}
-        key: stack-ubuntu-gfortran-openmpi
+        key: ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0
     - name: Install OPENMPI
       env:
         CACHE_HIT: ${{steps.cache-libraries.outputs.cache-hit}}
@@ -95,13 +98,12 @@ jobs:
         ESMF_COMPILER: gfortran
         ESMF_COMM: openmpi
         ESMF_NETCDF: nc-config
-        ESMF_INSTALL_PREFIX: ${STACK_ROOT}
       with:
         build-key: 'ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0'
         version: develop
         esmpy: false
         rebuild-check: quick
-        cache: false
+        cache: true
     - name: Print ESMF Info
       run: |
         cat ${ESMFMKFILE}

@@ -5,6 +5,10 @@ this action caches/restores ESMF libraries in order to speed up your workflow
 runs. If you're familiar with GitHub workflows and ESMF then skip ahead to an
 [advanced example](advanced-example.md).
 
+`install-esmf-action` sets up your environment as needed. It adds the ESMF
+executables to your PATH, adds ESMF libraries to your LD_LIBRARY_PATH, and
+sets ESMFMKFILE and ESMF_ROOT in your environment.
+
 [![Tests](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml/badge.svg)](https://github.com/esmf-org/install-esmf-action/actions/workflows/acceptance-test.yml)
 
 Here's an example workflow using `install-esmf-action`:
@@ -45,9 +49,11 @@ was built.
 
 By default `install-esmf-action` installs the ESMF package into
 `$HOME/.esmf-cache`. This can be changed by setting the
-`ESMF_INSTALL_PREFIX` environment variable. You may install ESMF
-in a directory of your choice and provide your own caching. If you do
-so then please disable caching.
+`ESMF_INSTALL_PREFIX` environment variable.
+
+For convience binaries are always installed into `$ESMF_INSTALL_PREFIX/bin`,
+libraries are always installed into `$ESMF_INSTALL_PREFIX/lib`, and modules
+are always installed into `$ESMF_INSTALL_PREFIX/mod`.
 
 ## Building
 
@@ -63,9 +69,12 @@ set a unique `build-key`.
 
 Note that ESMF dependencies are not cached by `install-esmf-action`. Follow the
 ["Caching dependencies to speed up workflows"](https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows)
-instructions to cache ESMF dependencies as needed. You may disable caching and
-provide your own caching. If you do so then don't forget to include the ESMF
-installation directory.
+instructions to cache ESMF dependencies as needed. You may install ESMF
+in a directory of your choice and provide your own caching. If you do
+so then please disable caching. If you are using `latest` or `develop`
+it is recommended that you use caching provided by `install-esmf-action`.
+Note that each time ESMF is updated it will create a new cache, which
+will consume your cache quota.
 
 Caches are deleted after 7 days of inactivity.
 
@@ -92,7 +101,7 @@ collisions.
 `latest` or `develop`. The `latest` version will determine the latest ESMF
 release. The `develop` version will determine the latest ESMF commit to the
 ESMF `develop` branch. Cache misses will be frequent when selecting the
-`develop` version.
+`develop` version and this will consume the cache quota.
 
 #### esmpy
 Enabling esmpy installs esmpy using pip and requires ESMF v8.3.0+.
