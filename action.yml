@@ -110,6 +110,7 @@ runs:
           echo "key-match=false" >> ${GITHUB_OUTPUT}
         fi
         echo "esmf-cache-key=$ESMF_CACHE_KEY" >> $GITHUB_OUTPUT
+        rm -f ${{github.workspace}}/.esmf-cache.txt
     - id: install-esmf
       if: steps.rebuild-check-esmf.outputs.key-match != 'true'
       shell: bash
@@ -121,19 +122,14 @@ runs:
         ESMF_INSTALL_DOCDIR: "doc"
         ESMF_INSTALL_HEADERDIR: "include"
         ESMF_INSTALL_PREFIX: "${{env.ESMF_ROOT}}"
-        ESMF_CACHE_KEY: "${{hashFiles('.esmf-cache.txt')}}"
+        ESMF_CACHE_KEY: "${{steps.rebuild-check-esmf.outputs.esmf-cache-key}}"
       run: |
-        if [ -f "${ESMF_INSTALL_PREFIX}/.esmf-cache.txt" ]; then
-          echo "ESMF Build Changes"
-          diff ${ESMF_INSTALL_PREFIX}/.esmf-cache.txt ${{github.workspace}}/.
-        fi
         cd ${ESMF_DIR}
         if [[ "${{inputs.rebuild-check}}" == "quick" ]]; then
           curl --silent -L ${{steps.version-esmf.outputs.esmf-url}} | tar --strip-components=1 -xz
         fi
         make -j 2
         make install
-        mv -f ${{github.workspace}}/.esmf-cache.txt ${ESMF_INSTALL_PREFIX}/.
         mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
         if [ -d "src/addon/esmpy" ]; then
           rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
