@@ -18,7 +18,7 @@ jobs:
   example-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Package Install
       run: |
         sudo apt-get -qq -y update
@@ -110,7 +110,7 @@ must be called prior to executing `install-esmf-action`.
 
 ```yaml
   - name: Setup Python
-    uses: actions/setup-python@v4
+    uses: actions/setup-python@v5
     with:
       python-version: '3.x'
 ```
@@ -153,7 +153,7 @@ Here's an example workflow step with configuration options:
       ESMF_NETCDF: nc-config
       ESMF_INSTALL_PREFIX: $HOME/software-stack
     with:
-      version: v8.5.0
+      version: v8.6.0
       esmpy: true
       cache: true
 ```
