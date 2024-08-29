@@ -82,7 +82,7 @@ runs:
         fi
     - id: cache-esmf
       if: inputs.cache == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{env.ESMF_ROOT}}
         key: esmf@${{env.ESMF_VERSION}}-${{hashFiles('.esmf-cache.txt')}}

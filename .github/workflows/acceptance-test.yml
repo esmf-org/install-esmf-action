@@ -42,9 +42,9 @@ jobs:
             cache: false
           }
         - {
-            name: "MacOS (v8.5.0, cache, netcdf)",
+            name: "MacOS (v8.6.0, cache, netcdf)",
             os: macos-latest,
-            version: v8.5.0,
+            version: v8.6.0,
             compiler: gfortran,
             comm: mpiuni,
             esmx: false,
@@ -55,7 +55,7 @@ jobs:
           }
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Package Install (Linux)
       if: runner.os == 'Linux' && matrix.config.netcdf == 'nc-config'
       run: |
@@ -64,13 +64,13 @@ jobs:
     - name: Package Install (macOS)
       if: runner.os == 'macOS' && matrix.config.netcdf == 'nc-config'
       run: |
-        ln -fs `which gcc-11` /usr/local/bin/gcc
-        ln -fs `which g++-11` /usr/local/bin/g++
-        ln -fs `which gfortran-11` /usr/local/bin/gfortran
+        ln -fs `which gcc-12` /usr/local/bin/gcc
+        ln -fs `which g++-12` /usr/local/bin/g++
+        ln -fs `which gfortran-12` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
     - name: Setup Python
       if: matrix.config.esmpy
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
     - name: Install ESMF

@@ -18,7 +18,7 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Library Directory
       run: |
         export STACK_ROOT=${HOME}/stack
@@ -31,7 +31,7 @@ jobs:
         echo "${STACK_ROOT}/bin" >> $GITHUB_PATH
     - name: Cache Libraries
       id: cache-libraries
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{env.STACK_ROOT}}
         key: ubuntu-gfortran-openmpi@4.0.3-netcdf@4.9.0
