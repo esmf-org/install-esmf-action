@@ -77,6 +77,11 @@ runs:
             make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ${{github.workspace}}/.esmf-cache.txt
           fi
         fi
+        if [[ "${{inputs.esmpy}}" == "true" ]]; then
+          echo "ESMPY=TRUE" >> ${{github.workspace}}/.esmf-cache.txt
+        else
+          echo "ESMPY=FALSE" >> ${{github.workspace}}/.esmf-cache.txt
+        fi
         if [ ! -z "${{inputs.build-key}}" ]; then
           echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ${{github.workspace}}/.esmf-cache.txt
         fi
@@ -130,19 +135,15 @@ runs:
         fi
         make -j 2
         make install
-        mkdir -p ${ESMF_INSTALL_PREFIX}/addon/esmpy
-        if [ -d "src/addon/esmpy" ]; then
-          rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
-        elif [ -d "src/addon/ESMPy" ]; then
-          rsync -a src/addon/ESMPy/ ${ESMF_INSTALL_PREFIX}/addon/esmpy
+        if [[ "${{inputs.esmpy}}" == "true" ]]; then
+          if [ -d "src/addon/esmpy" ]; then
+            cd src/addon/esmpy
+          elif [ -d "src/addon/ESMPy" ]; then
+            cd src/addon/ESMPy
+          fi
+          python -m pip install --upgrade pip
+          python -m pip install .
         fi
-    - id: install-esmpy
-      if: inputs.esmpy == 'true'
-      shell: bash
-      run: |
-        cd ${{env.ESMF_ROOT}}/addon/esmpy
-        python -m pip install --upgrade pip
-        python -m pip install .
 branding:
   icon: download
   color: blue
