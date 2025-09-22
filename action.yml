@@ -62,11 +62,13 @@ runs:
       shell: bash
       env:
         ESMF_DIR: ${{runner.temp}}/esmf-src
+        INSTALL_ESMF_ACTION_VERS: v1.0.2
       run: |
         mkdir -p ${ESMF_DIR}
         cd ${ESMF_DIR}
+        echo "INSTALL_ESMF_ACTION_VERS=${{env.INSTALL_ESMF_ACTION_VERS}}" > ${{github.workspace}}/.esmf-cache.txt
         if [[ "${{inputs.rebuild-check}}" == "quick" ]]; then
-          printenv | grep "^ESMF_" > ${{github.workspace}}/.esmf-cache.txt
+          printenv | grep "^ESMF_" >> ${{github.workspace}}/.esmf-cache.txt
           echo "RUNNER_OS=${{runner.os}}" >> ${{github.workspace}}/.esmf-cache.txt
           echo "RUNNER_ARCH=${{runner.arch}}" >> ${{github.workspace}}/.esmf-cache.txt
         else
@@ -76,11 +78,6 @@ runs:
           else
             make info | sed -E '/Compiling on|Machine characteristics/d' | sed '/Make version:/{N;d;}' > ${{github.workspace}}/.esmf-cache.txt
           fi
-        fi
-        if [[ "${{inputs.esmpy}}" == "true" ]]; then
-          echo "ESMPY=TRUE" >> ${{github.workspace}}/.esmf-cache.txt
-        else
-          echo "ESMPY=FALSE" >> ${{github.workspace}}/.esmf-cache.txt
         fi
         if [ ! -z "${{inputs.build-key}}" ]; then
           echo "ESMF_BUILD_KEY=${{inputs.build-key}}" >> ${{github.workspace}}/.esmf-cache.txt
@@ -135,15 +132,22 @@ runs:
         fi
         make -j 2
         make install
-        if [[ "${{inputs.esmpy}}" == "true" ]]; then
-          if [ -d "src/addon/esmpy" ]; then
-            cd src/addon/esmpy
-          elif [ -d "src/addon/ESMPy" ]; then
-            cd src/addon/ESMPy
-          fi
-          python -m pip install --upgrade pip
-          python -m pip install .
+        mkdir -p ${ESMF_INSTALL_PREFIX}/src/addon/esmpy
+        if [ -d "src/addon/esmpy" ]; then
+          rsync -a src/addon/esmpy/ ${ESMF_INSTALL_PREFIX}/src/addon/esmpy
+        elif [ -d "src/addon/ESMPy" ]; then
+          rsync -a src/addon/ESMPy/ ${ESMF_INSTALL_PREFIX}/src/addon/esmpy
         fi
+    - id: install-esmpy
+      if: inputs.esmpy == 'true'
+      shell: bash
+      run: |
+        mkdir -p ${{env.ESMF_ROOT}}/src/Infrastructure/Util/include
+        cd ${{env.ESMF_ROOT}}/src/Infrastructure/Util/include
+        rsync -a ${{env.ESMF_ROOT}}/include/ESMC_Macros.h .
+        cd ${{env.ESMF_ROOT}}/src/addon/esmpy
+        python -m pip install --upgrade pip
+        python -m pip install .
 branding:
   icon: download
   color: blue
