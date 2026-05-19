@@ -16,6 +16,7 @@ jobs:
     name: ${{matrix.config.name}}
     runs-on: ${{matrix.config.os}}
     strategy:
+      fail-fast: false
       matrix:
         config:
         - {
@@ -23,6 +24,7 @@ jobs:
             os: ubuntu-latest,
             version: latest,
             compiler: gfortran,
+            compilerv: 14,
             comm: mpiuni,
             esmx: true,
             esmpy: true,
@@ -35,6 +37,7 @@ jobs:
             os: ubuntu-latest,
             version: develop,
             compiler: gfortran,
+            compilerv: 14,
             comm: mpiuni,
             esmx: false,
             esmpy: false,
@@ -45,7 +48,8 @@ jobs:
             name: "MacOS (v8.6.0, cache, netcdf)",
             os: macos-latest,
             version: v8.6.0,
-            compiler: gfortran,
+            compiler: gfortranclang,
+            compilerv: 14,
             comm: mpiuni,
             esmx: false,
             esmpy: false,
@@ -64,10 +68,32 @@ jobs:
     - name: Package Install (macOS)
       if: runner.os == 'macOS' && matrix.config.netcdf == 'nc-config'
       run: |
-        ln -fs `which gcc-12` /usr/local/bin/gcc
-        ln -fs `which g++-12` /usr/local/bin/g++
-        ln -fs `which gfortran-12` /usr/local/bin/gfortran
         brew install netcdf netcdf-fortran
+    - name: Set up GFORTRAN
+      if: contains(matrix.config.compiler, 'gfortran')
+      run: |
+        command -v gcc-${{matrix.config.compilerv}} || {
+          echo "::error::gcc-${{matrix.config.compilerv}} not found"
+          exit 1
+        }
+        command -v g++-${{matrix.config.compilerv}} || {
+          echo "::error::g++-${{matrix.config.compilerv}} not found"
+          exit 1
+        }
+        command -v gfortran-${{matrix.config.compilerv}} || {
+          echo "::error::gfortran-${{matrix.config.compilerv}} not found"
+          exit 1
+        }
+        ln -fs `which gcc-${{matrix.config.compilerv}}` /usr/local/bin/gcc
+        ln -fs `which g++-${{matrix.config.compilerv}}` /usr/local/bin/g++
+        ln -fs `which gfortran-${{matrix.config.compilerv}}` /usr/local/bin/gfortran
+        gcc --version; g++ --version; gfortran --version
+    - name: Set up GFORTRANCLANG
+      if: contains(matrix.config.compiler, 'clang')
+      run: |
+        command -v clang || { echo "::error::clang not found"; exit 1; }
+        command -v clang++ || { echo "::error::clang++ not found"; exit 1; }
+        clang --version; clang++ --version
     - name: Setup Python
       if: matrix.config.esmpy
       uses: actions/setup-python@v5
