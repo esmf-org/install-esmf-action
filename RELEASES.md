@@ -1,5 +1,10 @@
 # Releases
 
+### 1.1.0
+
+- Added support for downloading branches and SHAs
+- Hardened version resolution step
+
 ### 1.0.0
 
 - Installs ESMF libraries and binaries into `${HOME}/esmf-${ESMF_VERSION}`

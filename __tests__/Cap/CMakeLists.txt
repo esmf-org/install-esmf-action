@@ -13,7 +13,7 @@ endif()
 set(CMAKE_Fortran_MODULE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mod")
 
 project(Cap
-        VERSION 1.0
+        VERSION 1.1.0
         LANGUAGES Fortran)
 
 add_library(Cap cap.F90)
