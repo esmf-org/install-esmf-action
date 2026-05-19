@@ -3,7 +3,7 @@
 ### 1.1.0
 
 - Added support for downloading branches and SHAs
-- Hardened version resolution step
+- Fixed bug resolving ESMF URLs by avoiding GitHub API usage
 
 ### 1.0.0
 
